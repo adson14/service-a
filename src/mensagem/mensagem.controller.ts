@@ -9,13 +9,19 @@ export class MensagemController {
   constructor(private authService: AuthService) {
     this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
-      options: { urls: ['amqp://localhost:5672'], queue: 'service_b_queue' },
+      options: { urls: [process.env.RABBITMQ_URL], queue: 'service_b_queue' },
     });
   }
 
   @Get('send')
   async sendMessage() {
     const token = await this.authService.generateToken({ userId: 1 });
-    return this.client.send('message_b', { text: 'Hello from Service A', token });
+    try {
+      return  this.client.send('message_b', { text: 'Hello from Service A', token });
+    } catch (error) {
+      console.error('Error in sendMessage:', error);
+      throw error;
+    }
+  
   }
 }
