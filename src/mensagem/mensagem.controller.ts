@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from 'src/auth.service';
 
 @Controller('mensagem')
 export class MensagemController {
