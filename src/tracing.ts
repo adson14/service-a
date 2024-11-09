@@ -10,16 +10,17 @@ import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { NestInstrumentation } from '@opentelemetry/instrumentation-nestjs-core';
 import { AmqplibInstrumentation } from '@opentelemetry/instrumentation-amqplib';
 
- const sdk = new NodeSDK({
+const sdk = new NodeSDK({
   traceExporter: new OTLPTraceExporter({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,  // O endereço do Collector no Docker Compose
   }),
   resource: new Resource({
-    [SemanticResourceAttributes.SERVICE_NAME]: process.env.OTEL_SERVICE_NAME,
+    [SemanticResourceAttributes.SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'service-a',
     [SemanticResourceAttributes.SERVICE_NAMESPACE]: 'minha-aplicacao',
     [SemanticResourceAttributes.SERVICE_INSTANCE_ID]: process.env.HOSTNAME || 'instance-1',  // ID da instância
-    [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
-    [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: 'development',  // ou 'staging', 'development'
+    [SemanticResourceAttributes.SERVICE_VERSION]: process.env.VERSION,
+    [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: process.env.ENVIRONMENT,  // ou 'staging', 'development'
+    [SemanticResourceAttributes.HOST_NAME]: process.env.DD_HOSTNAME || process.env.HOSTNAME 
   }),
   instrumentations: [
     //new HttpInstrumentation(),
