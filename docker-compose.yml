@@ -11,6 +11,8 @@ services:
       - "3001:3001"
     environment:
       - RABBITMQ_URL=amqp://rabbitmq
+    networks:
+      - default     
     depends_on:
       - service-a-db
 
@@ -22,8 +24,11 @@ services:
       - "3001:3001"
     environment:
       - RABBITMQ_URL=amqp://rabbitmq
+    networks:
+      - default    
     depends_on:
       - service-a-db
+      - otel-collector
   
   service-a-db:
     image: postgres:13
@@ -32,7 +37,29 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: service_a
     ports:
-      - "5433:5432"    
+      - "5433:5432"   
+    networks:
+      - default  
+
+  otel-collector:
+      image: otel/opentelemetry-collector-contrib:latest
+      volumes:
+        - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+      command:
+        - "--config=/etc/otel-collector-config.yml"
+      ports:
+        - "4317:4317"  # Porta para OTLP gRPC
+        - "4318:4318"  # Porta para OTLP HTTP
+      networks:
+        - default  
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - '16686:16686'  # Interface do Jaeger
+      - '4319:4317'  # Porta de coleta de traços         
+    networks:
+      - default    
 networks:
   default:
     external:
