@@ -1,3 +1,4 @@
+import './tracing'; 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
@@ -16,6 +17,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
+  
   await app.listen(3001);
 }
 bootstrap();
